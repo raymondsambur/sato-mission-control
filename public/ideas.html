@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Box | Sato HQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#09090b',
+                        surface: '#18181b',
+                        border: '#27272a',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; background: #09090b; color: #e4e4e7; }</style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <!-- Nav -->
+    <header class="h-16 px-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-950">
+        <div class="flex items-center gap-4">
+            <a href="/" class="flex items-center gap-2 text-zinc-400 hover:text-white transition text-sm font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Command
+            </a>
+            <div class="h-4 w-px bg-zinc-800 mx-2"></div>
+            <h1 class="font-semibold text-white">Document Repository</h1>
+        </div>
+        <div class="text-xs text-zinc-500">v2.0</div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="px-6 py-4 flex flex-col md:flex-row gap-4 justify-between border-b border-zinc-800 bg-zinc-900/50">
+        <!-- Categories -->
+        <div id="category-filters" class="flex gap-2 overflow-x-auto no-scrollbar">
+            <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 text-zinc-900" onclick="setCategory('ALL')">All</button>
+            <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-800 text-zinc-400 hover:bg-zinc-700" onclick="setCategory('STRATEGY')">Strategy</button>
+            <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-800 text-zinc-400 hover:bg-zinc-700" onclick="setCategory('PLANNED')">Planned</button>
+            <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-800 text-zinc-400 hover:bg-zinc-700" onclick="setCategory('APPROVED')">Approved</button>
+        </div>
+
+        <!-- Search & Sort -->
+        <div class="flex gap-3">
+            <div class="relative">
+                <input type="text" id="search-input" oninput="filterIdeas()" placeholder="Search..." 
+                    class="bg-zinc-900 border border-zinc-700 text-sm rounded-lg px-3 py-1.5 w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-zinc-500 absolute right-3 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <select id="sort-select" onchange="filterIdeas()" class="bg-zinc-900 border border-zinc-700 text-sm rounded-lg px-3 py-1.5 focus:outline-none">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="az">A-Z</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <main class="flex-1 overflow-y-auto p-6">
+        <div id="card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Cards injected here -->
+        </div>
+        
+        <!-- Pagination -->
+        <div id="pagination-controls" class="flex justify-center items-center gap-4 mt-8 pb-8"></div>
+    </main>
+
+    <!-- Modal -->
+    <div id="editor-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-zinc-950 border border-zinc-800 w-full max-w-4xl h-[85vh] rounded-xl flex flex-col shadow-2xl">
+            <!-- Header -->
+            <div class="h-14 border-b border-zinc-800 flex items-center justify-between px-6 bg-zinc-900/50 rounded-t-xl">
+                <h2 id="modal-title" class="font-medium text-zinc-300 truncate">Filename.md</h2>
+                <div class="flex gap-2">
+                    <button id="btn-edit-toggle" onclick="toggleEdit()" class="px-3 py-1.5 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 rounded border border-zinc-700">✎ Edit</button>
+                    <button onclick="closeModal()" class="px-3 py-1.5 text-xs font-bold bg-zinc-800 hover:bg-red-900/50 hover:text-red-400 rounded border border-zinc-700">✕</button>
+                </div>
+            </div>
+            
+            <!-- Body -->
+            <div class="flex-1 overflow-hidden relative">
+                <div id="markdown-view" class="h-full overflow-y-auto p-8 prose prose-invert prose-sm max-w-none"></div>
+                <textarea id="edit-area" class="hidden absolute inset-0 w-full h-full bg-zinc-950 p-6 font-mono text-sm text-zinc-300 resize-none outline-none"></textarea>
+            </div>
+            
+            <!-- Footer -->
+            <div id="edit-actions" class="hidden h-14 border-t border-zinc-800 items-center justify-end px-6 gap-3 bg-zinc-900/50 rounded-b-xl">
+                <button onclick="deleteIdea()" class="px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-lg transition">Delete</button>
+                <button onclick="saveIdea()" class="px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // ... (Same JS logic, just need to ensure classes match) ...
+        // I will inline the JS logic but adapted for Tailwind classes
+        
+        let currentFile = null;
+        let isEditing = false;
+        let allIdeas = []; 
+        let currentCategory = 'ALL';
+        let currentPage = 1;
+        const itemsPerPage = 12;
+
+        // Fallback Parser
+        function simpleMarkdown(text) {
+            if (!text) return '';
+            return text.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-blue-400 mb-4">$1</h1>')
+                       .replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold text-zinc-200 mt-6 mb-2">$1</h2>')
+                       .replace(/\*\*(.*)\*\*/gim, '<strong class="text-white">$1</strong>')
+                       .replace(/\n/gim, '<br>');
+        }
+
+        function parseMarkdown(text) {
+            // Check marked
+            if (typeof marked !== 'undefined') return marked.parse(text);
+            return simpleMarkdown(text);
+        }
+
+        function loadIdeas() {
+            fetch('/api/ideas?t=' + Date.now())
+                .then(res => res.json())
+                .then(ideas => {
+                    allIdeas = ideas;
+                    renderGrid(allIdeas);
+                });
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('#category-filters button').forEach(btn => {
+                // Tailwind Active State Logic
+                if (btn.innerText.toUpperCase() === cat || (cat === 'ALL' && btn.innerText === 'All')) {
+                    btn.className = "px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 text-zinc-900 transition";
+                } else {
+                    btn.className = "px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-800 text-zinc-400 hover:bg-zinc-700 transition";
+                }
+            });
+            currentPage = 1;
+            filterIdeas();
+        }
+
+        function filterIdeas() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const sort = document.getElementById('sort-select').value;
+            
+            let filtered = allIdeas.filter(idea => {
+                const matchesSearch = idea.title.toLowerCase().includes(query) || idea.snippet.toLowerCase().includes(query);
+                const matchesCat = currentCategory === 'ALL' || idea.status === currentCategory;
+                return matchesSearch && matchesCat;
+            });
+            
+            if (sort === 'newest') filtered.sort((a, b) => new Date(b.mtime) - new Date(a.mtime));
+            if (sort === 'oldest') filtered.sort((a, b) => new Date(a.mtime) - new Date(b.mtime));
+            if (sort === 'az') filtered.sort((a, b) => a.title.localeCompare(b.title));
+            
+            renderGrid(filtered);
+        }
+
+        function renderGrid(ideas) {
+            const container = document.getElementById('card-grid');
+            container.innerHTML = '';
+            
+            const totalPages = Math.ceil(ideas.length / itemsPerPage);
+            if (currentPage > totalPages && totalPages > 0) currentPage = 1;
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageIdeas = ideas.slice(start, end);
+            
+            pageIdeas.forEach(idea => {
+                const div = document.createElement('div');
+                div.className = 'group bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-900/10 transition-all cursor-pointer flex flex-col h-56';
+                div.onclick = () => openIdea(idea.filename);
+                
+                // Tailwind Colors
+                let tagColor = "bg-zinc-800 text-zinc-400";
+                if (idea.status === 'STRATEGY') tagColor = "bg-blue-500/10 text-blue-400 border border-blue-500/20";
+                if (idea.status === 'PLANNED') tagColor = "bg-purple-500/10 text-purple-400 border border-purple-500/20";
+                if (idea.status === 'APPROVED') tagColor = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                if (idea.status === 'DRAFT') tagColor = "bg-orange-500/10 text-orange-400 border border-orange-500/20";
+
+                const timeAgo = Math.floor((new Date() - new Date(idea.mtime)) / (1000 * 60 * 60 * 24)) + 'd ago';
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase ${tagColor}">${idea.status || 'DRAFT'}</span>
+                    </div>
+                    <h3 class="text-base font-semibold text-zinc-100 mb-2 leading-tight group-hover:text-blue-400 transition">${idea.title}</h3>
+                    <p class="text-xs text-zinc-500 line-clamp-3 mb-auto leading-relaxed">${idea.snippet}</p>
+                    <div class="mt-4 pt-4 border-t border-zinc-800 flex justify-between items-center text-xs text-zinc-500">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-zinc-600 group-hover:bg-blue-500 transition"></div>
+                            ${idea.owner}
+                        </div>
+                        <span>${timeAgo}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            updatePagination(ideas.length, totalPages);
+        }
+
+        function updatePagination(totalItems, totalPages) {
+            const controls = document.getElementById('pagination-controls');
+            if (totalItems === 0) {
+                controls.innerHTML = '<span class="text-zinc-500 text-sm">No documents found.</span>';
+                return;
+            }
+            controls.innerHTML = `
+                <button onclick="changePage(-1)" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                <span class="text-xs text-zinc-500">Page ${currentPage} of ${totalPages}</span>
+                <button onclick="changePage(1)" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-zinc-700 hover:bg-zinc-800 disabled:opacity-50" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+            `;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderGrid(allIdeas); // Re-slice
+        }
+
+        // Modal Logic (Same logic, new classes)
+        function openIdea(filename) {
+            currentFile = filename;
+            fetch('/api/ideas/' + filename)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('edit-area').value = data.content;
+                    document.getElementById('modal-title').innerText = filename;
+                    document.getElementById('markdown-view').innerHTML = parseMarkdown(data.content);
+                    
+                    isEditing = false;
+                    updateModalState();
+                    document.getElementById('editor-modal').classList.remove('hidden');
+                    document.getElementById('editor-modal').classList.add('flex');
+                });
+        }
+
+        function toggleEdit() {
+            isEditing = !isEditing;
+            updateModalState();
+        }
+
+        function updateModalState() {
+            const view = document.getElementById('markdown-view');
+            const edit = document.getElementById('edit-area');
+            const actions = document.getElementById('edit-actions');
+            const toggle = document.getElementById('btn-edit-toggle');
+
+            if (isEditing) {
+                view.classList.add('hidden');
+                edit.classList.remove('hidden');
+                actions.classList.remove('hidden');
+                actions.classList.add('flex');
+                toggle.innerText = '👁 Preview';
+                toggle.className = "px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded";
+            } else {
+                view.classList.remove('hidden');
+                edit.classList.add('hidden');
+                actions.classList.add('hidden');
+                actions.classList.remove('flex');
+                toggle.innerText = '✎ Edit';
+                toggle.className = "px-3 py-1.5 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 rounded border border-zinc-700";
+                if(edit.value) view.innerHTML = parseMarkdown(edit.value);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editor-modal').classList.add('hidden');
+            document.getElementById('editor-modal').classList.remove('flex');
+        }
+        
+        function saveIdea() {
+            const content = document.getElementById('edit-area').value;
+            fetch('/api/ideas/' + currentFile, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            }).then(() => { closeModal(); loadIdeas(); });
+        }
+
+        function deleteIdea() {
+            if(confirm('Delete ' + currentFile + '?')) {
+                fetch('/api/ideas/' + currentFile, { method: 'DELETE' })
+                .then(() => { closeModal(); loadIdeas(); });
+            }
+        }
+
+        loadIdeas();
+    </script>
+</body>
+</html>
