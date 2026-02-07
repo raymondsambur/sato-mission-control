@@ -58,10 +58,26 @@ app.get('/api/jobs', async (req, res) => {
         if (await fs.pathExists(appsPath)) {
             const content = await fs.readFile(appsPath, 'utf-8');
             const activeSection = content.split('## Historic')[0];
-            const appRegex = /-\s*\*\*(.+?)\*\*:\s*\n\s*-\s*Status:\s*\[(.+?)\]\s*(.+)\n\s*-\s*Notes:\s*(.+)/g;
-            let match;
-            while ((match = appRegex.exec(activeSection)) !== null) {
-                pipeline.push({ company: match[1], status: match[2], milestone: match[3], notes: match[4] });
+            // Robust parsing: Split by entry starter "- **"
+            const rawEntries = activeSection.split(/\n-\s+\*\*/);
+            
+            for (const entry of rawEntries) {
+                if (!entry.trim()) continue;
+                // Name: Match anything up to the closing "**" (ignoring colon)
+                const nameMatch = entry.match(/^(.+?)\*\*/);
+                // Status: Match "Status:" followed by anything (like "**") then "[STATUS]"
+                const statusMatch = entry.match(/Status:.*\[(.+?)\]/);
+                // Notes: Match "Notes:" followed by anything then the content
+                const notesMatch = entry.match(/Notes:.*?\s+(.+)/);
+
+                if (nameMatch && statusMatch) {
+                    pipeline.push({ 
+                        company: nameMatch[1].trim(), 
+                        status: statusMatch[1].trim(), 
+                        milestone: notesMatch ? notesMatch[1].trim() : 'Updated', 
+                        notes: notesMatch ? notesMatch[1].trim() : '' 
+                    });
+                }
             }
         }
         const leadsPath = path.join(MEMORY_DIR, 'leads.json');
@@ -184,14 +200,30 @@ async function emitJobApps(socket) {
             const content = await fs.readFile(appsPath, 'utf-8');
             const activeSection = content.split('## Historic')[0];
             const apps = [];
-            const appRegex = /-\s*\*\*(.+?)\*\*:\s*\n\s*-\s*Status:\s*\[(.+?)\]\s*(.+)\n\s*-\s*Notes:\s*(.+)/g;
-            let match;
-            while ((match = appRegex.exec(activeSection)) !== null) {
-                apps.push({ company: match[1], status: match[2], milestone: match[3], notes: match[4] });
+            // Robust parsing: Split by entry starter "- **"
+            const rawEntries = activeSection.split(/\n-\s+\*\*/);
+            
+            for (const entry of rawEntries) {
+                if (!entry.trim()) continue;
+                // Name: Match anything up to the closing "**" (ignoring colon)
+                const nameMatch = entry.match(/^(.+?)\*\*/);
+                // Status: Match "Status:" followed by anything (like "**") then "[STATUS]"
+                const statusMatch = entry.match(/Status:.*\[(.+?)\]/);
+                // Notes: Match "Notes:" followed by anything then the content
+                const notesMatch = entry.match(/Notes:.*?\s+(.+)/);
+
+                if (nameMatch && statusMatch) {
+                    apps.push({ 
+                        company: nameMatch[1].trim(), 
+                        status: statusMatch[1].trim(), 
+                        milestone: notesMatch ? notesMatch[1].trim() : 'Updated', 
+                        notes: notesMatch ? notesMatch[1].trim() : '' 
+                    });
+                }
             }
             socket.emit('job-apps-update', apps);
         }
-    } catch (e) {}
+    } catch (e) { console.error('emitJobApps error:', e); }
 }
 
 async function emitTasks(socket) {
