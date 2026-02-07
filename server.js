@@ -11,7 +11,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
-const WORKSPACE = process.env.WORKSPACE || path.join(__dirname, '../../');
+const WORKSPACE = process.env.WORKSPACE || path.join(__dirname, 'workspace');
 const MEMORY_DIR = path.join(WORKSPACE, 'memory');
 const IDEAS_DIR = path.join(WORKSPACE, 'ideas');
 
