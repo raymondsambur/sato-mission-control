@@ -15,7 +15,7 @@ const WORKSPACE = process.env.WORKSPACE || path.join(__dirname, '../../');
 const MEMORY_DIR = path.join(WORKSPACE, 'memory');
 const IDEAS_DIR = path.join(WORKSPACE, 'ideas');
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 // API: Ideas
