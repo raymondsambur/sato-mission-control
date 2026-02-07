@@ -110,25 +110,45 @@ function renderTasks(tasks) {
 }
 
 function renderLeads(leads) {
-    const el = document.getElementById('lead-streamer');
-    if (!el) return;
-    el.innerHTML = '';
-    leads.forEach(lead => {
-        const card = document.createElement('div');
-        card.className = "shrink-0 w-48 p-3 rounded-lg bg-zinc-800/30 border border-zinc-800/80 hover:border-blue-500/50 transition cursor-default";
-        card.innerHTML = `
-            <div class=\"flex justify-between items-start mb-2\">
-                <span class=\"text-[10px] font-bold text-blue-400\">${lead.company}</span>
-                <span class=\"px-1.5 py-0.5 bg-blue-500/10 text-blue-400 rounded text-[8px] uppercase font-bold\">${lead.tag}</span>
-            </div>
-            <div class=\"text-[11px] text-zinc-100 font-semibold mb-1 truncate\">${lead.title}</div>
-            <div class=\"flex justify-between items-center text-[10px] text-zinc-500\">
-                <span>${lead.location}</span>
-                <span class=\"text-zinc-400 font-mono\">${lead.salary}</span>
-            </div>
-        `;
-        el.appendChild(card);
-    });
+    const streamer = document.getElementById('lead-streamer');
+    const overview = document.getElementById('lead-streamer-overview');
+    const latestLeads = leads.slice(0, 5);
+
+    if (streamer) {
+        streamer.innerHTML = '';
+        latestLeads.forEach(lead => {
+            const card = document.createElement('div');
+            card.className = "shrink-0 w-48 p-3 rounded-lg bg-zinc-800/30 border border-zinc-800/80 hover:border-blue-500/50 transition cursor-default";
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] font-bold text-blue-400">${lead.company}</span>
+                    <span class="px-1.5 py-0.5 bg-blue-500/10 text-blue-400 rounded text-[8px] uppercase font-bold">${lead.tag}</span>
+                </div>
+                <div class="text-[11px] text-zinc-100 font-semibold mb-1 truncate">${lead.title}</div>
+                <div class="flex justify-between items-center text-[10px] text-zinc-500">
+                    <span>${lead.location}</span>
+                    <span class="text-zinc-400 font-mono">${lead.salary}</span>
+                </div>
+            `;
+            streamer.appendChild(card);
+        });
+    }
+
+    if (overview) {
+        overview.innerHTML = '';
+        latestLeads.forEach(lead => {
+            const item = document.createElement('div');
+            item.className = "p-2.5 rounded-lg bg-zinc-800/30 border border-zinc-800/80 space-y-1";
+            item.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-bold text-zinc-100">${lead.company}</span>
+                    <span class="text-[9px] font-bold uppercase text-blue-400">${lead.tag}</span>
+                </div>
+                <div class="text-[10px] text-zinc-400 truncate">${lead.title}</div>
+            `;
+            overview.appendChild(item);
+        });
+    }
 }
 
 function renderLearning(stats) {
