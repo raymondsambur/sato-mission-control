@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -14,30 +15,66 @@
                         background: '#09090b',
                         surface: '#18181b',
                         border: '#27272a',
-                        accent: '#3b82f6',
+                        accent: '#66fcf1',
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #e4e4e7; -webkit-tap-highlight-color: transparent; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
-        @media (min-width: 768px) { .desktop-no-scroll { overflow: hidden; height: 100vh; } }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #09090b;
+            color: #e4e4e7;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .desktop-no-scroll {
+                overflow: hidden;
+                height: 100vh;
+            }
+        }
+
+        /* Mobile Nav active state */
+        .nav-btn.active {
+            color: #66fcf1;
+            background: rgba(102, 252, 241, 0.1);
+        }
     </style>
 </head>
+
 <body class="desktop-no-scroll flex flex-col bg-[#09090b]">
 
-    <header class="h-16 shrink-0 border-b border-zinc-800 flex items-center justify-between px-4 md:px-6 bg-zinc-950/50 backdrop-blur-md z-10">
+    <!-- HEADER -->
+    <header
+        class="h-16 shrink-0 border-b border-zinc-800 flex items-center justify-between px-4 md:px-6 bg-zinc-950/50 backdrop-blur-md z-10 sticky top-0 md:static">
         <div class="flex items-center gap-3">
             <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
             <h1 class="font-bold text-base md:text-lg tracking-tight text-white">Sato HQ</h1>
         </div>
-        
+
         <div class="flex gap-4 md:gap-8 text-[10px] md:text-sm font-medium">
             <div class="flex flex-col items-center">
                 <span class="text-zinc-500 uppercase text-[9px]">CPU</span>
@@ -54,29 +91,43 @@
         </div>
     </header>
 
-    <main class="flex-1 p-4 grid grid-cols-1 md:grid-cols-4 gap-4 overflow-y-auto md:overflow-hidden pb-10">
-        
-        <!-- SIDEBAR -->
-        <div class="col-span-1 flex flex-col gap-4 overflow-y-auto pr-1 text-[#e4e4e7]">
+    <!-- CONTENT GRID -->
+    <!-- Updated: Added IDs and mobile utility classes (pb-20 for mobile nav spacing) -->
+    <main class="flex-1 p-4 grid grid-cols-1 md:grid-cols-4 gap-4 overflow-y-auto md:overflow-hidden pb-20 md:pb-4">
+
+        <!-- VIEW: OVERVIEW (Default Mobile) -->
+        <div id="view-overview" class="col-span-1 flex flex-col gap-4 overflow-y-auto pr-1 text-[#e4e4e7] md:flex">
             <!-- Career Hub Nav Card -->
-            <a href="/jobs.html" class="group block p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-blue-500/30 transition-all">
+            <a href="/jobs.html"
+                class="group block p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-blue-500/30 transition-all">
                 <div class="flex items-center justify-between mb-1">
                     <div class="flex items-center gap-2 text-blue-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
                         <span class="font-semibold text-sm">Career Hub</span>
                     </div>
-                    <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Live</span>
+                    <span
+                        class="bg-blue-500/10 text-blue-400 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Live</span>
                 </div>
                 <p class="text-zinc-500 text-[11px]">Pipeline & Lead Streamer</p>
             </a>
 
-            <a href="/ideas.html" class="group block p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-pink-500/30 transition-all">
+            <a href="/ideas.html"
+                class="group block p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-pink-500/30 transition-all">
                 <div class="flex items-center justify-between mb-1">
                     <div class="flex items-center gap-2 text-pink-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
                         <span class="font-semibold text-sm">Idea Box</span>
                     </div>
-                    <span class="bg-pink-500/10 text-pink-500 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Docs</span>
+                    <span
+                        class="bg-pink-500/10 text-pink-500 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Docs</span>
                 </div>
                 <p class="text-zinc-500 text-[11px]">Repository & Concepts</p>
             </a>
@@ -84,68 +135,73 @@
             <!-- Job Pipeline -->
             <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                 <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Job Pipeline</h2>
-                <div id="job-pipeline" class="space-y-3">
-                    <!-- JS Injected -->
-                </div>
+                <div id="job-pipeline" class="space-y-3"></div>
             </div>
 
             <!-- Learning Pulse -->
             <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                 <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Learning Pulse</h2>
-                <div id="learning-pulse" class="space-y-4">
-                    <!-- JS Injected -->
-                </div>
+                <div id="learning-pulse" class="space-y-4"></div>
             </div>
 
             <!-- Token Usage -->
             <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                 <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Token Usage</h2>
                 <div class="space-y-2">
-                    <div class="flex justify-between"><span class="text-xs text-zinc-400 font-medium">Today</span><span id="token-today" class="text-xs font-mono text-blue-400">0k</span></div>
-                    <div class="flex justify-between"><span class="text-xs text-zinc-400 font-medium">Weekly</span><span id="token-weekly" class="text-xs font-mono text-purple-400">0k</span></div>
-                    <div class="flex justify-between"><span class="text-xs text-zinc-400 font-medium">Monthly</span><span id="token-monthly" class="text-xs font-mono text-emerald-400">0k</span></div>
+                    <div class="flex justify-between"><span class="text-xs text-zinc-400 font-medium">Today</span><span
+                            id="token-today" class="text-xs font-mono text-blue-400">0k</span></div>
+                    <div class="flex justify-between"><span class="text-xs text-zinc-400 font-medium">Weekly</span><span
+                            id="token-weekly" class="text-xs font-mono text-purple-400">0k</span></div>
+                    <div class="flex justify-between"><span
+                            class="text-xs text-zinc-400 font-medium">Monthly</span><span id="token-monthly"
+                            class="text-xs font-mono text-emerald-400">0k</span></div>
                 </div>
             </div>
 
             <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                 <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Active Swarm</h2>
                 <div id="active-agents" class="space-y-2 mb-4"></div>
-                <button class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-[10px] font-bold rounded-lg border border-zinc-700 transition uppercase tracking-tighter">
+                <button
+                    class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-[10px] font-bold rounded-lg border border-zinc-700 transition uppercase tracking-tighter">
                     + DEPLOY AGENT
                 </button>
             </div>
-            
+
             <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
-                <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 text-center">Quick Actions</h2>
-                <button onclick="triggerAction('backup')" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-[10px] font-bold text-zinc-300 rounded border border-zinc-700 transition">💾 Backup Identity</button>
+                <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 text-center">Quick Actions
+                </h2>
+                <button onclick="triggerAction('backup')"
+                    class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-[10px] font-bold text-zinc-300 rounded border border-zinc-700 transition">💾
+                    Backup Identity</button>
             </div>
         </div>
 
-        <!-- CENTER: TERMINAL & LEADS -->
-        <div class="col-span-1 md:col-span-2 flex flex-col gap-4 overflow-hidden h-full">
+        <!-- VIEW: TERMINAL (Hidden on mobile default) -->
+        <div id="view-terminal" class="col-span-1 md:col-span-2 hidden md:flex flex-col gap-4 overflow-hidden h-full">
             <!-- Lead Streamer -->
             <div class="shrink-0 p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Lead Streamer</h2>
                     <span class="text-[9px] text-zinc-600">LATEST FINDINGS</span>
                 </div>
-                <div id="lead-streamer" class="flex gap-4 overflow-x-auto no-scrollbar pb-1">
-                    <!-- JS Injected -->
-                </div>
+                <div id="lead-streamer" class="flex gap-4 overflow-x-auto no-scrollbar pb-1"></div>
             </div>
 
             <!-- TERMINAL -->
             <div class="flex-1 rounded-xl border border-zinc-800 bg-black flex flex-col overflow-hidden">
-                <div class="h-9 shrink-0 border-b border-zinc-800 bg-zinc-900/50 flex items-center px-4 justify-between">
+                <div
+                    class="h-9 shrink-0 border-b border-zinc-800 bg-zinc-900/50 flex items-center px-4 justify-between">
                     <span class="text-[10px] font-mono text-zinc-500 uppercase">Live Console</span>
                     <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 </div>
-                <div id="terminal-feed" class="flex-1 p-4 overflow-y-auto mono text-[11px] leading-relaxed break-all"></div>
+                <div id="terminal-feed" class="flex-1 p-4 overflow-y-auto mono text-[11px] leading-relaxed break-all">
+                </div>
             </div>
         </div>
 
-        <!-- OPERATIONS -->
-        <div class="col-span-1 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 flex flex-col gap-4 overflow-hidden h-full">
+        <!-- VIEW: OPS (Hidden on mobile default) -->
+        <div id="view-ops"
+            class="col-span-1 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 hidden md:flex flex-col gap-4 overflow-hidden h-full">
             <h2 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Operations</h2>
             <div class="flex-1 overflow-y-auto space-y-6 pr-1">
                 <div>
@@ -165,7 +221,69 @@
 
     </main>
 
+    <!-- MOBILE NAVIGATION (Visible only on mobile) -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 w-full h-16 bg-zinc-950/90 backdrop-blur-lg border-t border-zinc-800 flex items-center justify-around px-2 z-50">
+        <button onclick="switchTab('overview')" id="nav-overview"
+            class="nav-btn active flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 hover:text-white transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                </path>
+            </svg>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Overview</span>
+        </button>
+        <button onclick="switchTab('terminal')" id="nav-terminal"
+            class="nav-btn flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 hover:text-white transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Console</span>
+        </button>
+        <button onclick="switchTab('ops')" id="nav-ops"
+            class="nav-btn flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 hover:text-white transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                </path>
+            </svg>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Ops</span>
+        </button>
+    </nav>
+
     <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // Mobile Tab Logic
+        function switchTab(tab) {
+            // Only applies on mobile (handled by classes, but visual states need updating)
+            const views = {
+                'overview': document.getElementById('view-overview'),
+                'terminal': document.getElementById('view-terminal'),
+                'ops': document.getElementById('view-ops')
+            };
+            const navs = {
+                'overview': document.getElementById('nav-overview'),
+                'terminal': document.getElementById('nav-terminal'),
+                'ops': document.getElementById('nav-ops')
+            };
+
+            // Reset all to default mobile hidden state
+            Object.values(views).forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+            Object.values(navs).forEach(el => el.classList.remove('active'));
+
+            // Activate Selected
+            if (views[tab]) {
+                views[tab].classList.remove('hidden');
+                views[tab].classList.add('flex');
+            }
+            if (navs[tab]) navs[tab].classList.add('active');
+        }
+    </script>
 </body>
+
 </html>
