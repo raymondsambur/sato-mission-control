@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const WORKSPACE = process.env.WORKSPACE || path.join(__dirname, '../../');
 const MEMORY_DIR = path.join(WORKSPACE, 'memory');
 const IDEAS_DIR = path.join(WORKSPACE, 'ideas');
@@ -58,10 +58,26 @@ app.get('/api/jobs', async (req, res) => {
         if (await fs.pathExists(appsPath)) {
             const content = await fs.readFile(appsPath, 'utf-8');
             const activeSection = content.split('## Historic')[0];
-            const appRegex = /-\s*\*\*(.+?)\*\*:\s*\n\s*-\s*Status:\s*\[(.+?)\]\s*(.+)\n\s*-\s*Notes:\s*(.+)/g;
-            let match;
-            while ((match = appRegex.exec(activeSection)) !== null) {
-                pipeline.push({ company: match[1], status: match[2], milestone: match[3], notes: match[4] });
+            // Robust parsing: Split by entry starter "- **"
+            const rawEntries = activeSection.split(/\n-\s+\*\*/);
+
+            for (const entry of rawEntries) {
+                if (!entry.trim()) continue;
+                // Name: Match anything up to the closing "**" (ignoring colon)
+                const nameMatch = entry.match(/^(.+?)\*\*/);
+                // Status: Match "Status:" followed by anything (like "**") then "[STATUS]"
+                const statusMatch = entry.match(/Status:.*\[(.+?)\]/);
+                // Notes: Match "Notes:" followed by anything then the content
+                const notesMatch = entry.match(/Notes:.*?\s+(.+)/);
+
+                if (nameMatch && statusMatch) {
+                    pipeline.push({
+                        company: nameMatch[1].trim(),
+                        status: statusMatch[1].trim(),
+                        milestone: notesMatch ? notesMatch[1].trim() : 'Updated',
+                        notes: notesMatch ? notesMatch[1].trim() : ''
+                    });
+                }
             }
         }
         const leadsPath = path.join(MEMORY_DIR, 'leads.json');
@@ -103,7 +119,7 @@ app.post('/api/action', async (req, res) => {
     let cmd = '';
     if (action === 'backup') cmd = `bash ${path.join(WORKSPACE, 'scripts/backup.sh')}`;
     if (action === 'sync') cmd = `touch ${path.join(WORKSPACE, 'memory/sync_signal.txt')}`;
-    if (action === 'clean') cmd = `rm -rf ${path.join(WORKSPACE, 'memory/temp/*')}`; 
+    if (action === 'clean') cmd = `rm -rf ${path.join(WORKSPACE, 'memory/temp/*')}`;
     if (cmd) {
         exec(cmd, (err, stdout, stderr) => {
             if (err) return res.status(500).json({ error: stderr });
@@ -121,13 +137,13 @@ function parseLogLine(line, defaultSource = "System") {
         const d = new Date(tsMatch[1]);
         if (!isNaN(d.getTime())) dateObj = d;
     }
-    const timestamp = dateObj.toLocaleTimeString('en-US', { 
-        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+    const timestamp = dateObj.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
     });
     const source = agentMatch ? agentMatch[1] : defaultSource;
     const text = line.replace(/\[\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\]\s*/g, '')
-                    .replace(/\[(Sato|Rook|Scout|Hunter|Vanguard)\]\s*/gi, '')
-                    .trim();
+        .replace(/\[(Sato|Rook|Scout|Hunter|Vanguard)\]\s*/gi, '')
+        .trim();
     return { source, text, timestamp, rawTime: dateObj.getTime() };
 }
 
@@ -154,7 +170,7 @@ async function emitTokenUsage(socket) {
             }
             socket.emit('token-update', { today, weekly, monthly });
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 async function emitLeads(socket) {
@@ -164,7 +180,7 @@ async function emitLeads(socket) {
             const data = await fs.readJson(leadsPath);
             socket.emit('leads-update', data);
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 async function emitLearning(socket) {
@@ -174,7 +190,7 @@ async function emitLearning(socket) {
             const data = await fs.readJson(learnPath);
             socket.emit('learning-update', data);
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 async function emitJobApps(socket) {
@@ -184,14 +200,30 @@ async function emitJobApps(socket) {
             const content = await fs.readFile(appsPath, 'utf-8');
             const activeSection = content.split('## Historic')[0];
             const apps = [];
-            const appRegex = /-\s*\*\*(.+?)\*\*:\s*\n\s*-\s*Status:\s*\[(.+?)\]\s*(.+)\n\s*-\s*Notes:\s*(.+)/g;
-            let match;
-            while ((match = appRegex.exec(activeSection)) !== null) {
-                apps.push({ company: match[1], status: match[2], milestone: match[3], notes: match[4] });
+            // Robust parsing: Split by entry starter "- **"
+            const rawEntries = activeSection.split(/\n-\s+\*\*/);
+
+            for (const entry of rawEntries) {
+                if (!entry.trim()) continue;
+                // Name: Match anything up to the closing "**" (ignoring colon)
+                const nameMatch = entry.match(/^(.+?)\*\*/);
+                // Status: Match "Status:" followed by anything (like "**") then "[STATUS]"
+                const statusMatch = entry.match(/Status:.*\[(.+?)\]/);
+                // Notes: Match "Notes:" followed by anything then the content
+                const notesMatch = entry.match(/Notes:.*?\s+(.+)/);
+
+                if (nameMatch && statusMatch) {
+                    apps.push({
+                        company: nameMatch[1].trim(),
+                        status: statusMatch[1].trim(),
+                        milestone: notesMatch ? notesMatch[1].trim() : 'Updated',
+                        notes: notesMatch ? notesMatch[1].trim() : ''
+                    });
+                }
             }
             socket.emit('job-apps-update', apps);
         }
-    } catch (e) {}
+    } catch (e) { console.error('emitJobApps error:', e); }
 }
 
 async function emitTasks(socket) {
@@ -201,14 +233,14 @@ async function emitTasks(socket) {
             const tasks = await fs.readJson(tasksPath);
             socket.emit('tasks-update', tasks);
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 async function emitAgentStatus(socket) {
     try {
         const content = await fs.readFile(path.join(WORKSPACE, 'SESSION-STATE.md'), 'utf-8');
         socket.emit('agent-status', { raw: content });
-    } catch (e) {}
+    } catch (e) { }
 }
 
 async function emitRecentLogs(socket) {
@@ -225,7 +257,7 @@ async function emitRecentLogs(socket) {
         }
         allLines.sort((a, b) => a.rawTime - b.rawTime);
         socket.emit('logs-update', allLines.slice(-100));
-    } catch (e) {}
+    } catch (e) { }
 }
 
 // Socket IO
